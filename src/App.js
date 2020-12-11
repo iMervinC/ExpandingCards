@@ -31,15 +31,27 @@ const activeState = [
 const activeReducer = (state, action) => {
   switch (action.type) {
     case "TOGGLE":
-      const falseAll = state.map((x) => Object.assign(x, { toggle: false }));
-      const toggled = Object.assign(falseAll[action.payload], {
-        toggle: true
-      });
-      const newState = state.map((x, index) =>
-        index !== action.payload ? x : toggled
-      );
-      console.log(newState);
-      return newState;
+      const toggleTrue = (action) => {
+        const falseAll = state.map((x) => Object.assign(x, { toggle: false }));
+        const toggled = Object.assign(falseAll[action.payload], {
+          toggle: true
+        });
+        const newState = state.map((x, index) =>
+          index !== action.payload ? x : toggled
+        );
+        return newState;
+      };
+      const toggleFalse = (action) => {
+        const falseAll = state.map((x) => Object.assign(x, { toggle: false }));
+        const toggled = Object.assign(falseAll[action.payload], {
+          toggle: false
+        });
+        const newState = state.map((x, index) =>
+          index !== action.payload ? x : toggled
+        );
+        return newState;
+      };
+      return action.active ? toggleFalse(action) : toggleTrue(action);
     default:
       return state;
   }
@@ -70,16 +82,18 @@ const Panels = ({ img, title, id, stat }) => {
   const context = useContext(Context);
   const { dispatch } = context;
   const clickHandler = (id) => {
-    dispatch({ type: "TOGGLE", payload: id });
+    dispatch({ type: "TOGGLE", payload: id, active: stat });
   };
 
   return (
-    <div
-      onClick={() => clickHandler(id)}
-      className={stat ? "panel active" : "panel"}
-      style={{ backgroundImage: `url(${img})` }}
-    >
-      <h3>{title}</h3>
-    </div>
+    <>
+      <div
+        onClick={() => clickHandler(id)}
+        className={stat ? "panel active" : "panel"}
+        style={{ backgroundImage: `url(${img})` }}
+      >
+        <h3>{title}</h3>
+      </div>
+    </>
   );
 };
